@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="expires" content="0">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      height: 100%;
+      font-size: 20px;
+    }
+    body {
+      height: 100%;
+      background-color: pink;
+    }
+    .wp {
+      width: 100%;
+    }
+    #share {
+      position: absolute;
+      width: 6.25rem;
+      height: 6.25rem;
+      bottom: 10rem;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background-color: skyblue;
+      outline: none;
+      border: 1px solid #fff;
+      box-shadow: 0 0 5px skyblue;
+      color: #fff;
+      font-size: .9375rem;
+      
+    }
+    #shareCanvas {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .postImg {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      width: 100%;
+      transform: translateX(-50%);
+    }
+  </style>
+  <script>
+    // 动态设置rem基准值
+    (function () {
+      let fn = function () {
+        let w = document.documentElement.clientWidth;
+        let rempx = (w/640)*20;
+        document.documentElement.style.fontSize = rempx + 'px';
+      }
+      window.addEventListener('resize', fn);
+      fn()
+    })()
+  </script>
+  <title>Document</title>
+</head>
+<body>
+  <div class="wp">
+    <button id='share'>分享</button>
+    <canvas id="shareCanvas"></canvas>
+  </div>
+  <!-- <script src="http://192.168.1.11:1337/vorlon.js"></script> -->
+  <script src="./js/qrcode.min.js"></script>
+  <script src="./js/Cavs.js"></script>
+  <script>
+    // 链接转二维码
+    new Promise(resolve => {
+      let $qrcode = document.createElement('canvas');
+      new QRCode($qrcode, {
+        text: 'https://www.baidu.com',
+        done () {
+          resolve($qrcode.querySelector('img').getAttribute('src'));
+          $qrcode = null;
+        },
+        fail () {
+          resolve();
+          $qrcode = null;
+        }
+      });
+    }).then(qrcodeUrl => {
+      let json = {
+        type: 'image',
+        x: 0,
+        y: 0,
+        w: 570,
+        h: 865,
+        url: './images/bg_share.png',
+        childrens: [
+          {
+            type: 'text',
+            x: 114,
+            y: 34,
+            string: '向向~',
+            style: 'bold 24px arial,sans-serif',
+            color: 'red'
+          },{
+            type: 'image',
+            x: 60,
+            y: 61.7,
+            w: 68,
+            h: 68,
+            url: 'http://source.unsplash.com/random',
+            origin: 'center',
+            radius: 34
+          },{
+            type: 'image',
+            x: 30,
+            y: 672,
+            w: 162,
+            h: 162,
+            url: qrcodeUrl
+          },{
+            type: 'image',
+            x: 480,
+            y: 773,
+            w: 116,
+            h: 116,
+            url: 'images/logo.png',
+            origin: 'center'
+          }
+        ]
+      }
+      let $poster = document.querySelector('#shareCanvas');
+      let posterCavs = new Cavs({
+        el: $poster,
+        width: 570,
+        height: 865 // 宽高决定输出图片的大小
+      });
+
+      // 传入json参数，调用绘制方法
+      posterCavs.draw(json);
+      posterCavs.draw({
+        type: 'rect',
+        x: 200,
+        y: 400,
+        w: 40,
+        h: 150,
+        color: 'red',
+        radius: 20,
+        mode: 'stroke',
+        lineWidth: 1
+      });
+
+      let $share = document.querySelector('#share');
+      $share.addEventListener('click', function () {
+        posterCavs.toImage(function (img) {
+          img.setAttribute('class', 'postImg')
+          document.querySelector('.wp').append(img);
+        })
+      });
+    })
+    
+
+
+  </script>
+</body>
+</html>
