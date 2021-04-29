@@ -65,8 +65,6 @@
       this._queue = this._queue.then(() => {
         let img = new Image();
         img.src = this.el.toDataURL('image/png');
-        // img.style.width = this.width+'px';
-        // img.style.height = this.height+'px';
         return callback(img)
       })
     }
@@ -116,8 +114,8 @@
     _drawText(options) {
       let ctx = this.ctx;
       ctx.textBaseline = 'top';
-      let {x, y, string, style, mode, color} = options;
-      ctx.font = style;
+      let {x, y, string, font, mode, color} = options;
+      ctx.font = font;
       mode === 'stroke' ? ctx.strokeStyle = color : ctx.fillStyle = color;
       mode === 'stroke' ? ctx.strokeText(string, x, y) : ctx.fillText(string, x, y);
     }
@@ -144,17 +142,6 @@
       let min = w < h ? w : h;
       r = r > min/2 ? min/2 : r;
       let ctx = this.ctx;
-      // ctx.beginPath();
-      // ctx.moveTo(x+r, y);     // 1
-      // ctx.arcTo(x, y, x, y+r, r); // 2, 3
-      // ctx.lineTo(x,y+h-r); // 4
-      // ctx.arcTo(x, y+h, x+r, y+h, r); // 5,6
-      // ctx.lineTo(x+w-r, y+h); // 7
-      // ctx.arcTo(x+w, h+y, x+w, y+h-r, r); // 8,9
-      // ctx.lineTo(x+w, y+r); // 10
-      // ctx.arcTo(x+w, y, x+w-r, y, r); // 11, 12
-      // ctx.closePath();
-      // ctx.clip();
 
       ctx.beginPath();
       ctx.moveTo(x + r, y);
@@ -181,7 +168,7 @@
       mode: 'fill',
       lineWidth: 1,
       radius: 0,
-      style: '18px sans-serif',
+      font: '18px sans-serif',
       color: 'black'
     }
   }
